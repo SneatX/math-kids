@@ -20,7 +20,7 @@ function HomePage() {
                     <div className="ml-4">
                         <h2 className="text-2xl font-bold text-indigo-700">¡Hola amiguito!</h2>
                         <p className="text-gray-600">
-                            Soy Mateo, tu compañero de matemáticas. ¡Vamos a aprender y divertirnos juntos!
+                            ¡Vamos a aprender y divertirnos juntos!
                         </p>
                         <button
                             className="mt-3 bg-indigo-500 text-white px-4 py-2 rounded-full hover:bg-indigo-600 transition-colors text-sm font-medium"

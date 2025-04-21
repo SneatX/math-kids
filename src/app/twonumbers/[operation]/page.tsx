@@ -6,7 +6,6 @@ import Link from "next/link";
 
 function TwoNumbersPage() {
     const { operation } = useParams();
-    console.log(operation);
 
     const [num1, setNum1] = useState(0);
     const [num2, setNum2] = useState(0);
@@ -58,7 +57,6 @@ function TwoNumbersPage() {
         }
         setNum1(a);
         setNum2(b);
-        console.log(correctAnswer);
 
         generateAnswers(correctAnswer)
         setSelectedAnswer(null);
