@@ -36,7 +36,7 @@ export default function ProgressSection() {
       <div className="space-y-3">
         {[
           { label: "Sumas", value: progress.addition, color: "green" },
-          { label: "Restas", value: progress.subtraction, color: "blue" },
+          { label: "Restas", value: progress.subtraction, color: "indigo" },
         ].map((stat) => (
           <div key={stat.label}>
             <div className="flex justify-between mb-1">
