@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Mascot from "@/app/components/Mascot";
 import Link from "next/link";
+import { useFeedbackSounds } from "@/app/hooks/useFeedbackSounds";
 
 function TwoNumbersPage() {
   const { operation } = useParams();
 
+  const { playCorrect, playWrong } = useFeedbackSounds();
   const [num1, setNum1] = useState(0);
   const [num2, setNum2] = useState(0);
   const [correctAnswer, setCorrectAnswer] = useState(0);
@@ -82,6 +84,7 @@ function TwoNumbersPage() {
     setIsCorrect(correct);
     setSelectedAnswer(answer);
     if (correct) {
+      playCorrect();
       const newScore = score + 1;
       setScore(newScore);
       setStreak(streak + 1);
@@ -90,6 +93,7 @@ function TwoNumbersPage() {
       const operationKey = `score_${operation}`;
       sessionStorage.setItem(operationKey, newScore.toString());
     } else {
+      playWrong();
       setStreak(0);
       setMascotEmotion("sad");
     }
