@@ -111,14 +111,14 @@ export default function ShapesGamePage() {
             <div className="w-32 h-32 bg-green-400" />
           )}
           {currentShape === "Triangle" && (
-            <svg width="128" height="128" viewBox="0 0 128 128">
-              <polygon
-                points="64,0 128,128 0,128"
-                fill="#f87171"
-                stroke="black"
-                strokeWidth="4"
-              />
-            </svg>
+            <div
+              className="w-0 h-0 border-l-16 border-r-16 border-b-32 border-transparent border-b-red-400"
+              style={{
+                borderLeftWidth: 64,
+                borderRightWidth: 64,
+                borderBottomWidth: 128,
+              }}
+            />
           )}
           {currentShape === "Rectangle" && (
             <div className="w-48 h-24 bg-yellow-400" />
