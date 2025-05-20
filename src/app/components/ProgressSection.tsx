@@ -6,6 +6,7 @@ export default function ProgressSection() {
     addition: 0,
     subtraction: 0,
     shapes: 0,
+    clock: 0,
   });
 
   useEffect(() => {
@@ -28,10 +29,16 @@ export default function ProgressSection() {
       sessionStorage.getItem("score_attempts_shapes") || "0"
     );
 
+    const clockScore = parseInt(sessionStorage.getItem("score_clock") || "0");
+    const clockAttempts = parseInt(
+      sessionStorage.getItem("score_attempts_clock") || "0"
+    );
+
     setProgress({
       addition: (additionScore / (additionAttempts || 1)) * 100, // el || 1 es para evitar dividir por 0
       subtraction: (subtractionScore / (subtractionAttempts || 1)) * 100,
       shapes: (shapesScore / (shapesAttempts || 1)) * 100,
+      clock: (clockScore / (clockAttempts || 1)) * 100,
     });
   }, []);
 
@@ -45,6 +52,7 @@ export default function ProgressSection() {
           { label: "Sumas", value: progress.addition, color: "green" },
           { label: "Restas", value: progress.subtraction, color: "indigo" },
           { label: "Figuras", value: progress.shapes, color: "yellow" },
+          { label: "La Hora", value: progress.clock, color: "red" },
         ].map((stat) => (
           <div key={stat.label}>
             <div className="flex justify-between mb-1">

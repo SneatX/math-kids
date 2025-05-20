@@ -36,7 +36,7 @@ function HomePage() {
       icon: <Clock className="text-red-500" size={32} />,
       color: "bg-red-100 border-red-300",
       description: "Aprende a leer el reloj",
-      link: "/timeGame",
+      link: "/clockGame",
     },
   ];
 
