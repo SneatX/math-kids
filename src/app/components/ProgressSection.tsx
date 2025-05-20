@@ -5,26 +5,33 @@ export default function ProgressSection() {
   const [progress, setProgress] = useState({
     addition: 0,
     subtraction: 0,
+    shapes: 0,
   });
 
   useEffect(() => {
     const additionScore = parseInt(
-      localStorage.getItem("score_addition") || "0"
+      sessionStorage.getItem("score_addition") || "0"
     );
     const additionAttempts = parseInt(
-      localStorage.getItem("score_attempts_addition") || "0"
+      sessionStorage.getItem("score_attempts_addition") || "0"
     );
 
     const subtractionScore = parseInt(
-      localStorage.getItem("score_subtraction") || "0"
+      sessionStorage.getItem("score_subtraction") || "0"
     );
     const subtractionAttempts = parseInt(
-      localStorage.getItem("score_attempts_subtraction") || "0"
+      sessionStorage.getItem("score_attempts_subtraction") || "0"
+    );
+
+    const shapesScore = parseInt(sessionStorage.getItem("score_shapes") || "0");
+    const shapesAttempts = parseInt(
+      sessionStorage.getItem("score_attempts_shapes") || "0"
     );
 
     setProgress({
       addition: (additionScore / (additionAttempts || 1)) * 100, // el || 1 es para evitar dividir por 0
       subtraction: (subtractionScore / (subtractionAttempts || 1)) * 100,
+      shapes: (shapesScore / (shapesAttempts || 1)) * 100,
     });
   }, []);
 
@@ -37,6 +44,7 @@ export default function ProgressSection() {
         {[
           { label: "Sumas", value: progress.addition, color: "green" },
           { label: "Restas", value: progress.subtraction, color: "indigo" },
+          { label: "Figuras", value: progress.shapes, color: "yellow" },
         ].map((stat) => (
           <div key={stat.label}>
             <div className="flex justify-between mb-1">

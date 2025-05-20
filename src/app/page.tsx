@@ -12,6 +12,7 @@ function HomePage() {
       icon: <Plus className="text-green-500" size={32} />,
       color: "bg-green-100 border-green-300",
       description: "Aprende a sumar con amigos",
+      link: "/twonumbers/addition",
     },
     {
       id: "subtraction",
@@ -19,6 +20,7 @@ function HomePage() {
       icon: <Minus className="text-blue-500" size={32} />,
       color: "bg-blue-100 border-blue-300",
       description: "Descubre el poder de restar",
+      link: "/twonumbers/subtraction",
     },
     {
       id: "figures",
@@ -26,6 +28,7 @@ function HomePage() {
       icon: <Triangle className="text-yellow-500" size={32} />,
       color: "bg-yellow-100 border-yellow-300",
       description: "Conoce las figuras geométricas",
+      link: "/shapesGame",
     },
     {
       id: "time",
@@ -33,6 +36,7 @@ function HomePage() {
       icon: <Clock className="text-red-500" size={32} />,
       color: "bg-red-100 border-red-300",
       description: "Aprende a leer el reloj",
+      link: "/timeGame",
     },
   ];
 
@@ -61,7 +65,7 @@ function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {games.map((game) => (
             <Link
-              href={`/twonumbers/${game.id}`}
+              href={game.link}
               key={game.id}
               className={`${game.color} border-2 rounded-xl p-4 flex flex-col items-center text-center hover:shadow-md transition-shadow`}
             >

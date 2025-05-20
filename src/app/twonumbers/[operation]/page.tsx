@@ -16,18 +16,18 @@ function TwoNumbersPage() {
   >("happy");
   const [streak, setStreak] = useState(0);
   const [score, setScore] = useState(
-    parseInt(localStorage.getItem(`score_${operation}`) || "0")
+    parseInt(sessionStorage.getItem(`score_${operation}`) || "0")
   );
   const [attempts, setAttempts] = useState(
-    parseInt(localStorage.getItem(`score_attempts_${operation}`) || "0")
+    parseInt(sessionStorage.getItem(`score_attempts_${operation}`) || "0")
   );
   const [answerOptions, setAnswerOptions] = useState<number[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
-  function setScoreFromLocalStorage() {
+  function setScoreFromsessionStorage() {
     const key = `score_${operation}`;
-    const oldScore = parseInt(localStorage.getItem(key) || "0");
+    const oldScore = parseInt(sessionStorage.getItem(key) || "0");
     setScore(oldScore);
   }
 
@@ -88,7 +88,7 @@ function TwoNumbersPage() {
       setMascotEmotion(streak >= 2 ? "excited" : "happy");
 
       const operationKey = `score_${operation}`;
-      localStorage.setItem(operationKey, newScore.toString());
+      sessionStorage.setItem(operationKey, newScore.toString());
     } else {
       setStreak(0);
       setMascotEmotion("sad");
@@ -96,7 +96,7 @@ function TwoNumbersPage() {
 
     setAttempts(attempts + 1);
     const attemptsKey = `score_attempts_${operation}`;
-    localStorage.setItem(attemptsKey, (attempts + 1).toString());
+    sessionStorage.setItem(attemptsKey, (attempts + 1).toString());
 
     setTimeout(() => {
       generateProblem();
@@ -127,7 +127,7 @@ function TwoNumbersPage() {
 
   useEffect(() => {
     generateProblem();
-    setScoreFromLocalStorage();
+    setScoreFromsessionStorage();
   }, []);
 
   return (
