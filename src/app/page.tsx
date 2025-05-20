@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Minus, Triangle, Clock, Plus } from "lucide-react";
 import Mascot from "./components/Mascot";
 import ProgressSection from "./components/ProgressSection";
+import AleatoryGameButton from "./components/ui/AleatoryGameButton";
 
 function HomePage() {
   const games = [
@@ -53,9 +54,7 @@ function HomePage() {
             <p className="text-gray-600">
               ¡Vamos a aprender y divertirnos juntos!
             </p>
-            <button className="mt-3 bg-indigo-500 text-white px-4 py-2 rounded-full hover:bg-indigo-600 transition-colors text-sm font-medium">
-              ¡Empezar a Jugar!
-            </button>
+            <AleatoryGameButton gameLinks={games.map((game) => game.link)} />
           </div>
         </div>
 
