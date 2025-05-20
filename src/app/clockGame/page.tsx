@@ -3,69 +3,62 @@
 import { useEffect, useState } from "react";
 import Mascot from "@/app/components/Mascot";
 import Link from "next/link";
+import { useFeedbackSounds } from "@/app/hooks/useFeedbackSounds";
 
 type Emotion = "happy" | "sad" | "excited" | "thinking";
 
 export default function ClockGamePage() {
-  const [hour, setHour] = useState<number>(12);
-  const [minute, setMinute] = useState<number>(0);
+  const { playCorrect, playWrong } = useFeedbackSounds();
+  const [hour, setHour] = useState(12);
+  const [minute, setMinute] = useState(0);
   const [options, setOptions] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [emotion, setEmotion] = useState<Emotion>("happy");
   const [streak, setStreak] = useState(0);
-  const [score, setScore] = useState(
-    parseInt(sessionStorage.getItem("score_clock") || "0")
-  );
-  const [attempts, setAttempts] = useState(
-    parseInt(sessionStorage.getItem("score_attempts_clock") || "0")
-  );
+  const [score, setScore] = useState(0);
+  const [attempts, setAttempts] = useState(0);
 
-  // Inicializa desde sessionStorage
-  function initFromStorage() {
-    setScore(parseInt(sessionStorage.getItem("score_clock") || "0"));
-    setAttempts(
-      parseInt(sessionStorage.getItem("score_attempts_clock") || "0")
+  useEffect(() => {
+    const storedScore = parseInt(sessionStorage.getItem("score_clock") || "0");
+    const storedAtt = parseInt(
+      sessionStorage.getItem("score_attempts_clock") || "0"
     );
-  }
+    setScore(storedScore);
+    setAttempts(storedAtt);
 
-  // Genera una nueva ronda
+    generateRound();
+  }, []);
+
   function generateRound() {
-    // Hora aleatoria 1–12
     const h = Math.floor(Math.random() * 12) + 1;
-    // Minuto aleatorio múltiplo de 5: 0,5,...,55
     const m = Math.floor(Math.random() * 12) * 5;
     setHour(h);
     setMinute(m);
 
-    // Formatea "H:MM"
     const correct = `${h}:${m.toString().padStart(2, "0")}`;
-
-    // Genera distractores
     const opts = new Set<string>([correct]);
     while (opts.size < 4) {
       const hh = Math.floor(Math.random() * 12) + 1;
       const mm = Math.floor(Math.random() * 12) * 5;
-      const s = `${hh}:${mm.toString().padStart(2, "0")}`;
-      opts.add(s);
+      opts.add(`${hh}:${mm.toString().padStart(2, "0")}`);
     }
-
-    // Baraja opciones
     setOptions(Array.from(opts).sort(() => Math.random() - 0.5));
 
-    // Reset estado
     setSelected(null);
     setIsCorrect(null);
     setEmotion("thinking");
   }
 
-  // Comprueba la respuesta
   function checkAnswer(answer: string) {
-    const correct = answer === `${hour}:${minute.toString().padStart(2, "0")}`;
+    const correctStr = `${hour}:${minute.toString().padStart(2, "0")}`;
+    const correct = answer === correctStr;
     setIsCorrect(correct);
     setSelected(answer);
 
+    // Sonido y lógica de score
     if (correct) {
+      playCorrect();
       const newScore = score + 1;
       setScore(newScore);
       sessionStorage.setItem("score_clock", newScore.toString());
@@ -74,6 +67,7 @@ export default function ClockGamePage() {
       setStreak(newStreak);
       setEmotion(newStreak >= 3 ? "excited" : "happy");
     } else {
+      playWrong();
       setStreak(0);
       setEmotion("sad");
     }
@@ -82,17 +76,10 @@ export default function ClockGamePage() {
     setAttempts(newAttempts);
     sessionStorage.setItem("score_attempts_clock", newAttempts.toString());
 
-    setTimeout(() => {
-      generateRound();
-    }, 1500);
+    setTimeout(generateRound, 1500);
   }
 
-  useEffect(() => {
-    initFromStorage();
-    generateRound();
-  }, []);
-
-  // Cálculo de ángulos
+  // Ángulos para las manecillas
   const hourAngle = (hour % 12) * 30 + minute * 0.5;
   const minuteAngle = minute * 6;
 
@@ -124,13 +111,7 @@ export default function ClockGamePage() {
 
         {/* Reloj analógico */}
         <div className="bg-white rounded-2xl p-8 shadow-lg mb-8 flex justify-center">
-          <svg
-            width="200"
-            height="200"
-            viewBox="0 0 200 200"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Esfera */}
+          <svg width="200" height="200" viewBox="0 0 200 200">
             <circle
               cx="100"
               cy="100"
@@ -139,7 +120,6 @@ export default function ClockGamePage() {
               strokeWidth="4"
               fill="white"
             />
-            {/* Manecilla de hora */}
             <line
               x1="100"
               y1="100"
@@ -149,7 +129,6 @@ export default function ClockGamePage() {
               strokeWidth="4"
               transform={`rotate(${hourAngle} 100 100)`}
             />
-            {/* Manecilla de minutos */}
             <line
               x1="100"
               y1="100"
@@ -159,12 +138,11 @@ export default function ClockGamePage() {
               strokeWidth="2"
               transform={`rotate(${minuteAngle} 100 100)`}
             />
-            {/* Centro */}
             <circle cx="100" cy="100" r="4" fill="black" />
           </svg>
         </div>
 
-        {/* Opciones digitales */}
+        {/* Opciones */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           {options.map((opt) => (
             <button
@@ -189,13 +167,13 @@ export default function ClockGamePage() {
         <div className="flex justify-between">
           <Link
             href="/"
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-full transition-colors"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-full"
           >
             Volver al Inicio
           </Link>
           <button
             onClick={generateRound}
-            className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full transition-colors"
+            className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-full"
           >
             Nueva Hora
           </button>

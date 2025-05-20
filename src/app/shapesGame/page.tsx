@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Mascot from "@/app/components/Mascot";
 import Link from "next/link";
+import { useFeedbackSounds } from "@/app/hooks/useFeedbackSounds";
 
 type Emotion = "happy" | "sad" | "excited" | "thinking";
 type Shape = "Circle" | "Square" | "Triangle" | "Rectangle";
@@ -10,25 +11,26 @@ type Shape = "Circle" | "Square" | "Triangle" | "Rectangle";
 const allShapes: Shape[] = ["Circle", "Square", "Triangle", "Rectangle"];
 
 export default function ShapesGamePage() {
+  const { playCorrect, playWrong } = useFeedbackSounds();
   const [currentShape, setCurrentShape] = useState<Shape>("Circle");
   const [answerOptions, setAnswerOptions] = useState<Shape[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<Shape | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [mascotEmotion, setMascotEmotion] = useState<Emotion>("happy");
   const [streak, setStreak] = useState(0);
-  const [score, setScore] = useState(
-    parseInt(sessionStorage.getItem("score_shapes") || "0")
-  );
-  const [attempts, setAttempts] = useState(
-    parseInt(sessionStorage.getItem("score_attempts_shapes") || "0")
-  );
+  const [score, setScore] = useState(0);
+  const [attempts, setAttempts] = useState(0);
 
-  function initFromStorage() {
-    setScore(parseInt(sessionStorage.getItem("score_shapes") || "0"));
-    setAttempts(
-      parseInt(sessionStorage.getItem("score_attempts_shapes") || "0")
+  useEffect(() => {
+    const storedScore = parseInt(sessionStorage.getItem("score_shapes") || "0");
+    const storedAttempts = parseInt(
+      sessionStorage.getItem("score_attempts_shapes") || "0"
     );
-  }
+    setScore(storedScore);
+    setAttempts(storedAttempts);
+
+    generateRound();
+  }, []);
 
   function generateRound() {
     const idx = Math.floor(Math.random() * allShapes.length);
@@ -37,9 +39,7 @@ export default function ShapesGamePage() {
 
     const opts = new Set<Shape>([shape]);
     while (opts.size < 4) {
-      const randomShape =
-        allShapes[Math.floor(Math.random() * allShapes.length)];
-      opts.add(randomShape);
+      opts.add(allShapes[Math.floor(Math.random() * allShapes.length)]);
     }
     setAnswerOptions(Array.from(opts).sort(() => Math.random() - 0.5));
 
@@ -53,36 +53,33 @@ export default function ShapesGamePage() {
     setIsCorrect(correct);
     setSelectedAnswer(answer);
 
+    let newScore = score;
+    let newStreak = streak;
     if (correct) {
-      const newScore = score + 1;
-      setScore(newScore);
+      playCorrect();
+      newScore += 1;
+      newStreak += 1;
       sessionStorage.setItem("score_shapes", newScore.toString());
-
-      const newStreak = streak + 1;
-      setStreak(newStreak);
-      setMascotEmotion(newStreak >= 3 ? "excited" : "happy");
     } else {
-      setStreak(0);
-      setMascotEmotion("sad");
+      playWrong();
+      newStreak = 0;
     }
 
     const newAttempts = attempts + 1;
-    setAttempts(newAttempts);
     sessionStorage.setItem("score_attempts_shapes", newAttempts.toString());
 
-    setTimeout(() => {
-      generateRound();
-    }, 1500);
-  }
+    setScore(newScore);
+    setStreak(newStreak);
+    setAttempts(newAttempts);
+    setMascotEmotion(correct ? (newStreak >= 3 ? "excited" : "happy") : "sad");
 
-  useEffect(() => {
-    initFromStorage();
-    generateRound();
-  }, []);
+    setTimeout(generateRound, 1500);
+  }
 
   return (
     <main className="flex flex-col items-center">
       <section className="w-full max-w-4xl">
+        {/* Header */}
         <article className="bg-white rounded-2xl p-6 mb-8 shadow-lg flex items-center justify-between">
           <div className="flex items-center">
             <Mascot emotion={mascotEmotion} size="medium" />
@@ -114,14 +111,14 @@ export default function ShapesGamePage() {
             <div className="w-32 h-32 bg-green-400" />
           )}
           {currentShape === "Triangle" && (
-            <div
-              className="w-0 h-0 border-l-16 border-r-16 border-b-32 border-transparent border-b-red-400"
-              style={{
-                borderLeftWidth: 64,
-                borderRightWidth: 64,
-                borderBottomWidth: 128,
-              }}
-            />
+            <svg width="128" height="128" viewBox="0 0 128 128">
+              <polygon
+                points="64,0 128,128 0,128"
+                fill="#f87171"
+                stroke="black"
+                strokeWidth="4"
+              />
+            </svg>
           )}
           {currentShape === "Rectangle" && (
             <div className="w-48 h-24 bg-yellow-400" />
@@ -135,14 +132,13 @@ export default function ShapesGamePage() {
               key={opt}
               onClick={() => checkAnswer(opt)}
               disabled={selectedAnswer !== null}
-              className={`p-6 rounded-xl text-xl font-bold transition-all transform hover:scale-105
-                ${
-                  selectedAnswer === opt
-                    ? isCorrect
-                      ? "bg-green-500 text-white"
-                      : "bg-red-500 text-white"
-                    : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
-                }`}
+              className={`p-6 rounded-xl text-xl font-bold transition-all transform hover:scale-105 ${
+                selectedAnswer === opt
+                  ? isCorrect
+                    ? "bg-green-500 text-white"
+                    : "bg-red-500 text-white"
+                  : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+              }`}
             >
               {opt}
             </button>
