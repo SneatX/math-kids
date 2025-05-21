@@ -7,7 +7,7 @@ function Header() {
         <button className="p-2 hover:bg-indigo-600 rounded-full transition-colors">
           <Home size={24} />
         </button>
-        <h1 className="text-2xl font-bold">MathKids</h1>
+        <h1 className="text-2xl font-bold">Number Quest</h1>
       </div>
       <div className="flex gap-3">
         <button className="p-2 hover:bg-indigo-600 rounded-full transition-colors">
